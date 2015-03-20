@@ -1,0 +1,11 @@
+Projection    SINUSOIDAL                                                        
+Datum         NONE                                                              
+Zunits        NO                                                                
+Units         METERS                                                            
+Xshift        0.0000000000                                                      
+Yshift        0.0000000000                                                      
+Parameters 6371007.1809999999  0.0000000000                                     
+6371007.18100 /* radius of the sphere of reference                      
+ 0  0  0.000 /* longitude of central meridian                                   
+0.00000 /* false easting (meters)                                       
+0.00000 /* false northing (meters)                                      

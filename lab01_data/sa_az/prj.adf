@@ -1,0 +1,12 @@
+Projection    AZIMUTHAL                                                         
+Datum         NONE                                                              
+Zunits        NO                                                                
+Units         METERS                                                            
+Xshift        0.0000000000                                                      
+Yshift        0.0000000000                                                      
+Parameters 6370997.0000000000  0.0000000000                                     
+6370997.00000 /* radius of the sphere of reference                      
+ 105  0  0.000 /* longitude of center of projection                             
+ 62  0  0.000 /* latitude of center of projection                               
+0.00000 /* false easting (meters)                                       
+0.00000 /* false northing (meters)                                      
