@@ -25,7 +25,7 @@ for y in years:
 		fire_path = path + fire
 
 		#copying files
-		#arcpy.CopyFeatures_management(source + fire, fire_path)
+		arcpy.CopyFeatures_management(source + fire, fire_path)
 		#defining projection for files
 		arcpy.DefineProjection_management(fire_path, sr)
 		#adding to list
@@ -34,14 +34,14 @@ for y in years:
 # Merging monthly fire shapefiles into one
 arcpy.Merge_management(fire_path_list, path + "merged.shp")
 
-upper = arcpy.SearchCursor(path + "merged.shp", '"Conf" > 85')
-middle = arcpy.SearchCursor(path + "merged.shp", '60 <= "Conf" AND "Conf" <= 85')
-lower = arcpy.SearchCursor(path + "merged.shp", '"Conf" < 60')
+arcpy.Select_analysis(path + "merged.shp", path + "upper.shp", '"Conf" > 85')
+arcpy.Select_analysis(path + "merged.shp", path + "middle.shp", '60 <= "Conf" AND "Conf" <= 85')
+arcpy.Select_analysis(path + "merged.shp", path + "lower.shp", '"Conf" < 60')
 
-total = int((arcpy.GetCount_management(merged)).getOutput(0))
-upcount = int((arcpy.GetCount_management(upper)).getOutput(0))
-midcount = int((arcpy.GetCount_management(middle)).getOutput(0))
-lowcount = int((arcpy.GetCount_management(lower)).getOutput(0))
+total = int((arcpy.GetCount_management(path + "merged.shp")).getOutput(0))
+upcount = int((arcpy.GetCount_management(path + "upper.shp")).getOutput(0))
+midcount = int((arcpy.GetCount_management(path + "middle.shp")).getOutput(0))
+lowcount = int((arcpy.GetCount_management(path + "lower.shp")).getOutput(0))
 
 print "In 2007, %d percent of fires were detected with over 85 confidence interval.\n" % (round(upcount/total))
 print "In 2007, %d percent of fires were detected within 60 to 85 confidence range.\n" % (round(midcount/total))
