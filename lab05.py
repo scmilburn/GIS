@@ -17,33 +17,33 @@ years = [2007]
 months = range(1,13)
 
 fire_path_list = []
-sr = arcpy.SpatialReference(4326) #GCS_WGS_1984 projection
+sr = arcpy.SpatialReference(4326)
 
 for y in years:
 	for m in months:
 		fire = "%d%02d_rfe.shp" % (y,m)
 		fire_path = path + fire
+		arcpy.CopyFeatures_management(source + fire, fire_path) #copying files
+                
+		fire_path_list.append(fire_path) #adding to list
+		arcpy.DefineProjection_management(fire_path, sr) #defining projection for files
 
-		#copying files
-		arcpy.CopyFeatures_management(source + fire, fire_path)
-		#defining projection for files
-		arcpy.DefineProjection_management(fire_path, sr)
-		#adding to list
-		fire_path_list.append(fire_path)
-
-# Merging monthly fire shapefiles into one
+# MERGED INTO ONE
 arcpy.Merge_management(fire_path_list, path + "merged.shp")
 
-arcpy.Select_analysis(path + "merged.shp", path + "upper.shp", '"Conf" > 85')
-arcpy.Select_analysis(path + "merged.shp", path + "middle.shp", '60 <= "Conf" AND "Conf" <= 85')
-arcpy.Select_analysis(path + "merged.shp", path + "lower.shp", '"Conf" < 60')
-
 total = int((arcpy.GetCount_management(path + "merged.shp")).getOutput(0))
-upcount = int((arcpy.GetCount_management(path + "upper.shp")).getOutput(0))
-midcount = int((arcpy.GetCount_management(path + "middle.shp")).getOutput(0))
-lowcount = int((arcpy.GetCount_management(path + "lower.shp")).getOutput(0))
 
-print "In 2007, %d percent of fires were detected with over 85 confidence interval.\n" % (round(upcount/total))
-print "In 2007, %d percent of fires were detected within 60 to 85 confidence range.\n" % (round(midcount/total))
-print "In 2007, %d percent of fires were detected with below 60 confidence interval.\n" % (round(lowcount/total))
+#Merge layer
+arcpy.MakeFeatureLayer_management(path + "merged.shp", "merge_lyr")
+
+low = ["0", "60", "86"]
+up = ["59", "85", "100"]
+
+for i in range(0,3):
+        exp = '("Conf" >= ' + low[i] + ') AND ("Conf" <= ' + up[i] + ')'
+        arcpy.SelectLayerByAttribute_management("merge_lyr", "", exp)
+        ct = float((arcpy.GetCount_management("merge_lyr")).getOutput(0))
+        percent = int(round((ct/total)*100))
+        print "In 2007, %d percent of fires were detected in %s to %s confidence interval.\n" % (percent, low[i], up[i])
+
 print "DONE PROCESSING\n"
