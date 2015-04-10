@@ -10,8 +10,6 @@
 
 import arcpy
 
-print "imported"
-
 #Setting up path variables
 path = "C:/Users/smilburn/Desktop/lab06_data/"
 
@@ -37,11 +35,9 @@ for y in lat:
         arr.append(p1)
         
         grid.append(arcpy.Polygon(arcpy.Array(arr)))
-print "done for"
 
 #making polylist into .shp
 arcpy.CopyFeatures_management(grid, path + "grid.shp")
-print "made grid.shp"
 
 #DEFINING PROJECTION BASED OFF OF world.shp
 arcpy.DefineProjection_management(path + "grid.shp", 4326)
@@ -50,7 +46,10 @@ arcpy.DefineProjection_management(path + "grid.shp", 4326)
 arcpy.AddField_management(path + "grid.shp", "UID", "LONG")
 arcpy.CalculateField_management(path + "grid.shp", "UID", "!FID! + 1", "PYTHON")
 
-#Intersecting shapes and getting areas
+#Intersecting shapes, dissolving, and calculating areas
 arcpy.Intersect_analysis([path + "grid.shp", path + "world.shp"], path + "intersect.shp")
-arcpy.Dissolve_management()
-arcpy.CalculateAreas_stats(path + "dissolved.shp", path + "dissolved_farea.shp")
+arcpy.Dissolve_management(path + "intersect.shp", path + "dissolved.shp", "UID")
+arcpy.CalculateAreas_stats(path + "dissolved.shp", path + "dissolved_fa.shp")
+arcpy.AddField_management(path + "dissolved_fa.shp", "Land_fr", "DOUBLE")
+arcpy.CalculateField_management(path + "dissolved_fa.shp", "Land_fr", "!F_AREA!", "PYTHON")
+arcpy.DeleteField_management(path + "dissolved_fa.shp", "F_AREA")
